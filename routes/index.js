@@ -5,6 +5,7 @@ var multer = require('multer');
 var _config = require('../lib/config').config;
 var utils = require('../lib/components/utils');
 const { StatusCodes } = require('http-status-codes');
+const { toAnonymousList } = require('../lib/components/submission');
 
 const { loggerFactory } = require('lib/components/logger/LoggerFactory');
 
@@ -278,6 +279,10 @@ router.get('/submissions?', function(req, res, next) {
             dblink.submission.list(req.query, isAdmin, isStrong, function(slist) {
                 dblink.submission.listinfo(req.query, isAdmin, isStrong, function(slist_status) {
                     dblink.problemManager.scoreboard(uid, function(ac_list) {
+                        if (_config.JUDGE.ANONYMOUS_SUBMISSION) {
+                            slist = toAnonymousList(slist, uid);
+                        }
+
                         res.render('layout', {
                             layout: 'submissions',
                             subtitle: 'Submission',

@@ -7,6 +7,7 @@ const passwordGenerator = require('../lib/components/passwordGenerator');
 const _config = require('../lib/config').config;
 const dblink = require('../lib/components/dblink');
 const { getSendStyleCheckTaskRunner } = require('../lib/components/ScriptRunner');
+const { toAnonymousList } = require('../lib/components/submission');
 
 let invalidAPIKey = (req, res) => {
     const apiKey = req.header("Api-Key");
@@ -44,6 +45,10 @@ router.get('/submissions?', function(req, res, next) {
     dblink.helper.isAdmin(uid, function(isAdmin) {
         dblink.helper.isStrong(uid, function(isStrong) {
             dblink.api.list(req.query, isAdmin, isStrong, function(result) {
+                if (_config.JUDGE.ANONYMOUS_SUBMISSION) {
+                    result = toAnonymousList(result, uid);
+                }
+
                 res.json(result);
             });
         });
