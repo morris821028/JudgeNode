@@ -5,6 +5,7 @@ var multer = require('multer');
 var _config = require('../lib/config').config;
 var utils = require('../lib/components/utils');
 const { StatusCodes } = require('http-status-codes');
+const { toAnonymousList } = require('../lib/components/submission');
 
 const { loggerFactory } = require('lib/components/logger/LoggerFactory');
 
@@ -75,6 +76,7 @@ router.post('/login', function(req, res, next) {
         pwd: req.body.pwd
     };
     var iplist = _config.CONTEST.VALID_IP;
+    var classlist = _config.CONTEST.VALID_CLASS;
     var ip = req.ip;
     var backURL = req.session.redirect_to || utils.url_for('/');
 
@@ -91,21 +93,20 @@ router.post('/login', function(req, res, next) {
                 sysmsg: '帳號或密碼錯誤'
             });
         }
+
         /* login success */
         var uid = req.session.uid;
         var filter_ip = iplist.filter(function(valid_ip) {
             return ip == valid_ip;
         });
+        var isAdmin = req.session['class'] == null;
+        var isValidClass = classlist.includes(req.session['class']);
         /**
             enter judge privilege:
               1. contest not running
               2. contest running and user is a participant
          */
-        if (_config.CONTEST.MODE == false || filter_ip.length != 0 || req.session['class'] == null) {
-            dblink.user.update_login(uid, ip, function() {
-                res.redirect(backURL);
-            });
-        } else {
+        if (_config.CONTEST.MODE == true && !isAdmin && (!isValidClass || filter_ip.length == 0)) {
             logger.info('Blocked by test mode.');
             req.session.regenerate(function(err) {
                 res.render('layout', {
@@ -114,7 +115,25 @@ router.post('/login', function(req, res, next) {
                     sysmsg: '考試正在進行'
                 });
             });
+        } else {
+            dblink.user.update_login(uid, ip, function() {
+                res.redirect(backURL);
+            });
         }
+        // if (_config.CONTEST.MODE == false || filter_ip.length != 0 || req.session['class'] == null) {
+        //     dblink.user.update_login(uid, ip, function() {
+        //         res.redirect(backURL);
+        //     });
+        // } else {
+        //     logger.info('Blocked by test mode.');
+        //     req.session.regenerate(function(err) {
+        //         res.render('layout', {
+        //             layout: 'login',
+        //             subtitle: 'Login',
+        //             sysmsg: '考試正在進行'
+        //         });
+        //     });
+        // }
     });
 });
 /* User Logout and regenerate session */
@@ -278,6 +297,10 @@ router.get('/submissions?', function(req, res, next) {
             dblink.submission.list(req.query, isAdmin, isStrong, function(slist) {
                 dblink.submission.listinfo(req.query, isAdmin, isStrong, function(slist_status) {
                     dblink.problemManager.scoreboard(uid, function(ac_list) {
+                        if (_config.JUDGE.ANONYMOUS_SUBMISSION) {
+                            slist = toAnonymousList(slist, uid);
+                        }
+
                         res.render('layout', {
                             layout: 'submissions',
                             subtitle: 'Submission',
