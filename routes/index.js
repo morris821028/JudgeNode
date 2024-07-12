@@ -298,7 +298,7 @@ router.get('/submissions?', function(req, res, next) {
                 dblink.submission.listinfo(req.query, isAdmin, isStrong, function(slist_status) {
                     dblink.problemManager.scoreboard(uid, function(ac_list) {
                         if (_config.JUDGE.ANONYMOUS_SUBMISSION) {
-                            slist = toAnonymousList(slist, uid);
+                            slist = toAnonymousList(slist, uid, isAdmin);
                         }
 
                         res.render('layout', {

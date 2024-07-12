@@ -46,7 +46,7 @@ router.get('/submissions?', function(req, res, next) {
         dblink.helper.isStrong(uid, function(isStrong) {
             dblink.api.list(req.query, isAdmin, isStrong, function(result) {
                 if (_config.JUDGE.ANONYMOUS_SUBMISSION) {
-                    result = toAnonymousList(result, uid);
+                    result = toAnonymousList(result, uid, isAdmin);
                 }
 
                 res.json(result);
