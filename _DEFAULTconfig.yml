@@ -29,6 +29,7 @@ DATABASE:
 
 # WEBSITE API HOST
 HOST:
+    PORT: '8080'
     TITLE: 'Judge Girl'
     IP: '140.112.31.208'
     root: '/'
@@ -48,6 +49,23 @@ Disqus:
 # Privilege
 Privilege:
     register_key: 'test'
+
+LOG: 
+    path: '/home/c2014/judgesister/file.log'
+    level:
+        stdout: 'info'
+        file: 'debug'
+
+RESOURCE:
+    public:
+        root: '/home/c2014/judgesister/JudgeResource/public'                        # The path of images, files or scripts related to problems.
+        testdata: '/home/c2014/judgesister/JudgeResource/public/downloads/testdata' # The path of testdata which are provided to users.
+        announcement: '/home/c2014/judgesister/JudgeResource/announcement'
+        problem: '/home/c2014/judgesister/JudgeResource/problem'                    # The path of problem descriptions.
+        solution: '/home/c2014/judgesister/JudgeResource/solution'                  # The path of solution descriptions.
+        contest: '/home/c2014/judgesister/JudgeResource/contest'                    # The path of contest pages.
+    testdata: '/home/c2014/judgesister/JudgeResource/testdata'                      # The path of testdata for problems.
+    submission: ''
 
 # Certification
 Cert: [
