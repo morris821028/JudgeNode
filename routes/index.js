@@ -146,7 +146,7 @@ router.get('/logout', function(req, res, next) {
         res.redirect(utils.url_for('/'));
     });
 });
-router.get('/edit', function(req, res, next) {
+router.get('/edit',dblink.helper.isAuthenticated, function(req, res, next) {
     var uid = req.session.uid;
 
     if (uid === undefined)
@@ -200,10 +200,17 @@ router.post('/edit', function(req, res, next) {
 });
 
 router.get('/signup', function(req, res, next) {
-    res.render('layout', {
-        layout: 'signup',
-        user: req.session,
-        sysmsg: ''
+    var uid = req.session.uid;
+    dblink.helper.isAdmin(uid, function(isAdmin) {
+        if (isAdmin) {
+            res.render('layout', {
+                layout: 'signup',
+                user: req.session,
+                sysmsg: ''
+            });
+        } else {
+            res.redirect(utils.url_for('/'));
+        }
     });
 });
 
@@ -239,7 +246,7 @@ router.post('/register', function(req, res, next) {
 router.get('/archive', function(req, res, next) {
     res.redirect(utils.url_for('/'));
 });
-router.get('/ranklist?', function(req, res, next) {
+router.get('/ranklist?',dblink.helper.isAuthenticated, function(req, res, next) {
     let selfId = req.session.uid;
     let isTestMode = _config.CONTEST.MODE == true;
     let noClass = req.session['class'] == null;
@@ -281,7 +288,7 @@ router.get('/ranklist?', function(req, res, next) {
         renderForbidden();
 });
 
-router.get('/progress', function(req, res, next) {
+router.get('/progress',dblink.helper.isAuthenticated, function(req, res, next) {
     dblink.rank.progress(function(rlist) {
         res.render('layout', {
             layout: 'progress',
@@ -290,7 +297,7 @@ router.get('/progress', function(req, res, next) {
     });
 });
 
-router.get('/submissions?', function(req, res, next) {
+router.get('/submissions?',dblink.helper.isAuthenticated, function(req, res, next) {
     var uid = req.session.uid;
     dblink.helper.isAdmin(uid, function(isAdmin) {
         dblink.helper.isStrong(uid, function(isStrong) {
@@ -316,7 +323,7 @@ router.get('/submissions?', function(req, res, next) {
     });
 });
 
-router.get('/live', function(req, res, next) {
+router.get('/live',dblink.helper.isAuthenticated, function(req, res, next) {
     res.render('layout', {
         layout: 'live',
         subtitle: 'Live',
@@ -325,14 +332,14 @@ router.get('/live', function(req, res, next) {
     });
 });
 
-router.get('/problems/domains', function(req, res, next) {
+router.get('/problems/domains',dblink.helper.isAuthenticated, function(req, res, next) {
     res.render('layout', {
         layout: 'domains',
         subtitle: 'Domain Set'
     });
 });
 
-router.get('/problems/domain/:did', function(req, res, next) {
+router.get('/problems/domain/:did',dblink.helper.isAuthenticated, function(req, res, next) {
     var did = req.params.did;
     dblink.problemManager.domainLevelList(did, function(lvList) {
         dblink.problemManager.levelProgress(req.session && req.session.uid, did, function(lvProgress) {
@@ -348,7 +355,7 @@ router.get('/problems/domain/:did', function(req, res, next) {
     });
 });
 
-router.get('/problem/:cid/:pid', function(req, res, next) {
+router.get('/problem/:cid/:pid',dblink.helper.isAuthenticated, function(req, res, next) {
     var cid = req.params.cid,
         pid = req.params.pid,
         uid = req.session.uid;
@@ -403,7 +410,7 @@ router.get('/problem/:cid/:pid', function(req, res, next) {
     });
 });
 
-router.get('/solution/problem/:cid/:pid', function(req, res, next) {
+router.get('/solution/problem/:cid/:pid',dblink.helper.isAuthenticated, function(req, res, next) {
     var cid = req.params.cid,
         pid = req.params.pid,
         uid = req.session.uid;
@@ -422,7 +429,7 @@ router.get('/solution/problem/:cid/:pid', function(req, res, next) {
     });
 });
 
-router.get('/statistic/problem/:cid/:pid', function(req, res, next) {
+router.get('/statistic/problem/:cid/:pid',dblink.helper.isAuthenticated, function(req, res, next) {
     var cid = req.params.cid,
         pid = req.params.pid,
         uid = req.session.uid;
@@ -451,7 +458,7 @@ router.get('/statistic/problem/:cid/:pid', function(req, res, next) {
     });
 });
 
-router.get('/statistic/grade/problem/:cid/:pid', function(req, res, next) {
+router.get('/statistic/grade/problem/:cid/:pid',dblink.helper.isAuthenticated, function(req, res, next) {
     var cid = req.params.cid,
         pid = req.params.pid,
         uid = req.session.uid;
@@ -473,7 +480,7 @@ router.get('/statistic/grade/problem/:cid/:pid', function(req, res, next) {
     });
 });
 
-router.get('/contests?', function(req, res, next) {
+router.get('/contests?',dblink.helper.isAuthenticated, function(req, res, next) {
     dblink.contest.list(req.query, req.session.uid, function(clist) {
         dblink.contest.listsize(req.query, req.session.uid, function(csize) {
             res.render('layout', {
@@ -487,7 +494,7 @@ router.get('/contests?', function(req, res, next) {
     });
 });
 
-router.get('/contest/:cid', async function(req, res, next) {
+router.get('/contest/:cid',dblink.helper.isAuthenticated, async function(req, res, next) {
     var cid = req.params.cid,
         uid = req.session.uid;
 
@@ -525,7 +532,7 @@ router.get('/contest/:cid', async function(req, res, next) {
     });
 });
 
-router.get('/scoreboard/contest/:cid', async function(req, res, next) {
+router.get('/scoreboard/contest/:cid',dblink.helper.isAuthenticated, async function(req, res, next) {
     var cid = req.params.cid,
         uid = req.session.uid;
 
@@ -546,7 +553,7 @@ router.get('/time', function(req, res, next) {
     res.send(new Date());
 });
 
-router.get('/score', function(req, res, next) {
+router.get('/score',dblink.helper.isAuthenticated, function(req, res, next) {
     var uid = req.session.uid;
     dblink.helper.isAdmin(uid, function(isAdmin) {
         dblink.user.info(req.session.uid, function(user) {
