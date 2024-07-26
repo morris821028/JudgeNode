@@ -31,12 +31,8 @@ function submitStep(req, res, uid, pid, cid, lng) {
       let file_size = 0;
       if (req.files['code' + i] == null || req.files['code' + i] == undefined ||
         req.files['code' + i][0] == null || req.files['code' + i][0] == undefined) {
-        if (req.body['paste_code' + i].length > 65536 || req.body['paste_code' + i].trim().length == 0) {
-          loggerFactory.getLogger(module.id).debug('NOT FOUND FILE ' + i);
-          return res.redirect(utils.url_for('/'));
-        } else {
-          file_size = req.body['paste_code' + i].length;
-        }
+        loggerFactory.getLogger(module.id).debug('NOT FOUND FILE ' + i);
+        return res.redirect(req.headers.referer);
       } else {
         file_size = req.files['code' + i][0].size;
       }
