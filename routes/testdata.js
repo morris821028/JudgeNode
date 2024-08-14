@@ -35,11 +35,6 @@ router.get('/download-all/:pid', (req, res) => {
 
     const zipFileName = `p${pid}_testdata.zip`;
     const testScriptName = 'runTest.sh';
-    const testScriptPath = path.join(publicDir, testScriptName);
-
-    if (!fs.existsSync(testScriptPath)) {
-        return res.status(404).send('Test script not found.' + testScriptPath);
-    }
 
     // Set headers to trigger download in browser
     res.setHeader('Content-Disposition', `attachment; filename=${zipFileName}`);
@@ -60,7 +55,12 @@ router.get('/download-all/:pid', (req, res) => {
             const filePath = path.join(testdataDir, file);
             archive.file(filePath, { name: file });
         });
-        archive.file(testScriptPath, {name: testScriptName});
+        if (fs.existsSync(path.join(testdataDir, testScriptName))) {
+            archive.file(path.join(testdataDir, testScriptName), {name: testScriptName});
+        }
+        else {
+            archive.file(path.join(publicDir, testScriptName), {name: testScriptName});
+        }
         archive.finalize();
     });
 
