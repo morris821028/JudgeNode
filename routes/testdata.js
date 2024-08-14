@@ -1,6 +1,10 @@
 var express = require('express');
 var router = express.Router();
+const archiver = require('archiver');
+const fs = require('fs');
+const path = require('path');
 var dblink = require('../lib/components/dblink');
+var _config = require('../lib/config').config;
 
 router.get('/download/:pid', function(req, res, next) {
     var pid = req.params.pid;
@@ -18,6 +22,49 @@ router.get('/download/:pid', function(req, res, next) {
         });
     });
 });
+
+router.get('/download-all/:pid', (req, res) => {
+    const pid = req.params.pid;
+    const testdataDir = path.join(_config.RESOURCE.public.testdata, pid);
+    const publicDir = path.join(__dirname, '../public'); // Adjust this path if needed
+    
+    // Ensure the directory exists
+    if (!fs.existsSync(testdataDir)) {
+        return res.status(404).send('Testdata not found.');
+    }
+
+    const zipFileName = `p${pid}_testdata.zip`;
+    const testScriptName = 'runTest.sh';
+
+    // Set headers to trigger download in browser
+    res.setHeader('Content-Disposition', `attachment; filename=${zipFileName}`);
+    res.setHeader('Content-Type', 'application/zip');
+
+    const archive = archiver('zip', {
+        zlib: { level: 9 }
+    });
+
+    archive.on('error', function(err) {
+        res.status(500).send({ error: err.message });
+    });
+
+    archive.pipe(res);
+
+    dblink.problemManager.downloadList(pid, function(file_list) {
+        file_list.forEach(file => {
+            const filePath = path.join(testdataDir, file);
+            archive.file(filePath, { name: file });
+        });
+        if (fs.existsSync(path.join(testdataDir, testScriptName))) {
+            archive.file(path.join(testdataDir, testScriptName), {name: testScriptName});
+        }
+        else {
+            archive.file(path.join(publicDir, testScriptName), {name: testScriptName});
+        }
+        archive.finalize();
+    });
+
+}); 
 
 // router.get('/manage', function(req, res, next) {
 //     var uid = req.session.uid;

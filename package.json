@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "ulimit -n 4096 && NODE_PATH=./ nodejs ./bin/www",
+    "start": "ulimit -n 4096 && NODE_PATH=./ node ./bin/www",
     "flush-redis": "redis-cli flushall",
     "fresh-start": "redis-cli flushall && ulimit -n 4096 && NODE_PATH=./ nodejs ./bin/www",
     "test": "NODE_PATH=./ NODE_ENV=test mocha --recursive --exit",
@@ -11,6 +11,7 @@
     "build": "node ./node_modules/gulp/bin/gulp.js build"
   },
   "dependencies": {
+    "archiver": "^7.0.1",
     "body-parser": "^1.18.3",
     "bower": "^1.8.4",
     "child_process": "^1.0.2",
