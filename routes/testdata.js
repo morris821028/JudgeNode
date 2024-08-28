@@ -55,10 +55,7 @@ router.get('/download-all/:pid', (req, res) => {
             const filePath = path.join(testdataDir, file);
             archive.file(filePath, { name: file });
         });
-        if (fs.existsSync(path.join(testdataDir, testScriptName))) {
-            archive.file(path.join(testdataDir, testScriptName), {name: testScriptName});
-        }
-        else {
+        if (!fs.existsSync(path.join(testdataDir, testScriptName))) {
             archive.file(path.join(publicDir, testScriptName), {name: testScriptName});
         }
         archive.finalize();
