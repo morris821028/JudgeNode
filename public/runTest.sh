@@ -20,7 +20,7 @@ for infile in *.in; do
     
     ./$EXECUTABLE < $infile > $my_output
 
-    diff $outfile $my_output
+    diff -Z $outfile $my_output
     if [ $? -eq 0 ]; then
         echo "Test $infile: PASS"
     else
