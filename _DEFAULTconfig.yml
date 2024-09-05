@@ -17,6 +17,7 @@ JUDGE:
 CONTEST:
     MODE: false
     SUBMIT_LIMIT: 15
+    VALID_CLASS: ["4"]
     VALID_IP: ["::ffff:140.112.16.155", "::ffff:140.112.16.156", "::ffff:140.112.16.158", "::1"]
 
 # DATABASE Setting, MySQL
