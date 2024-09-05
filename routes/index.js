@@ -83,7 +83,7 @@ router.post('/login', function(req, res, next) {
     let logger = loggerFactory.getLogger(module.id);
     logger.info(`Login request: (${user["lgn"]}, ${ip})`);
 
-    dblink.user.login(user, req.session, function(status) {
+    dblink.user.login(user, req.session, async function(status) {
         /* login fail */
         if (status == 0) {
             logger.info('Wrong password.');
@@ -99,8 +99,27 @@ router.post('/login', function(req, res, next) {
         var filter_ip = iplist.filter(function(valid_ip) {
             return ip == valid_ip;
         });
+        logger.info(`previous IP : ${filter_ip}`);
         var isAdmin = req.session['class'] == null;
         var isValidClass = classlist.includes(req.session['class']);
+        
+        const { redisClient } = require('../lib/components/RedisClient');
+
+        logger.info(`${redisClient.getClient()}`);
+        const sessionKeys = await redisClient.scanKeys('sess:*');
+
+        for (const key of sessionKeys) {
+            const sessionData = await redisClient.getValue(key);
+            if (sessionData) {
+                const session = JSON.parse(sessionData);
+                if (session.uid === uid && session.ip && session.ip !== ip) {
+                    await redisClient.deleteKey(key);
+                    logger.info(`Terminated session from previous IP. Session key: ${key}`);
+                }
+            }
+        }
+
+        req.session.ip = ip;
         /**
             enter judge privilege:
               1. contest not running
