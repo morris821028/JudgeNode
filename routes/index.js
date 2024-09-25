@@ -8,6 +8,10 @@ const { StatusCodes } = require('http-status-codes');
 const { toAnonymousList } = require('../lib/components/submission');
 
 const { loggerFactory } = require('lib/components/logger/LoggerFactory');
+const fs = require('fs');
+const path = require('path');
+
+
 
 /* limit upload file size = 64 KB */
 var upload = multer({
@@ -586,6 +590,30 @@ router.get('/score',dblink.helper.isAuthenticated, function(req, res, next) {
         });
     });
 });
+
+/* Dictionary */
+let dictionary = null;
+router.get('/Dictionary', function (req, res, next){
+    if (!dictionary) {
+        try {
+            const data = fs.readFileSync(
+                path.join(__dirname, '../public/dictionary.json'),
+                'utf-8'
+            );
+            dictionary = JSON.parse(data);
+            console.log('First load')
+        } catch (error) {
+            console.error('讀取字典發生錯誤:', error);
+            res.status(500).send('無法載入字典數據');
+        }
+    }
+    res.render('layout', {
+        layout: 'Dictionary',
+        dictionary: dictionary
+    });
+    
+});
+
 
 var sourceRouter = require('./source'),
     apiRouter = require('./api'),

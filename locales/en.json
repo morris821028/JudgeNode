@@ -154,5 +154,6 @@
 	"Pwd": "Pwd",
 	"Average Cyclomatic Number": "Average Cyclomatic Number",
 	"Average Cyclomatic Number(C)": "Average Cyclomatic Number(C)",
-	"Cyclomatic Complexity": "Cyclomatic Complexity"
+	"Cyclomatic Complexity": "Cyclomatic Complexity",
+	" Dictionary": " Dictionary"
 }

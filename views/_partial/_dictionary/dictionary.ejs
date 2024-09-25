@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <title>高中7000單-中英字典</title>
+</head>
+<style>
+    .custom-border {
+        border: 1px solid gray;
+        border-radius: 4px;
+        margin: 0.5em;
+        padding: 1em 3em;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .header h1 {
+        text-align: center;
+    }
+
+    #search-container {
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    #search-input {
+        width: 70%;
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    #search-button {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    #result-container {
+        margin-top: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        /* table-layout: fixed; */
+    }
+
+    colgroup col:nth-child(1) {
+        width: 10%;
+    }
+
+    colgroup col:nth-child(2),
+    colgroup col:nth-child(3) {
+        width: 45%;
+    }
+
+    th,
+    td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: center;
+        word-wrap: break-word;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+    .odd-row {
+        background-color: #f9f9f9;
+    }
+
+
+    @media screen and (max-width: 600px) {
+
+        table,
+        thead,
+        tbody,
+        th,
+        td,
+        tr {
+            display: block;
+        }
+
+        tr {
+            margin-bottom: 10px;
+        }
+
+        th,
+        td {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        th {
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
+        }
+
+        td {
+            border: none;
+            position: relative;
+            padding-left: 50%;
+        }
+
+        td:before {
+            position: absolute;
+            left: 10px;
+            width: 45%;
+            padding-right: 10px;
+            white-space: nowrap;
+            font-weight: bold;
+        }
+
+        td:nth-of-type(1):before {
+            content: "#";
+        }
+
+        td:nth-of-type(2):before {
+            content: "英文";
+        }
+
+        td:nth-of-type(3):before {
+            content: "中文";
+        }
+    }
+</style>
+
+<body>
+    <div class="header">
+        <h1>高中7000單-中英字典</h1>
+    </div>
+    <div class="content">
+        <div id="search-container">
+            <input type="text" id="search-input" placeholder="請輸入英文單字">
+            <button id="search-button">搜尋</button>
+        </div>
+        <div id="result-container">
+        </div>
+    </div>
+    <script>
+        // 将字典数据嵌入到前端
+        const dictionary = <%- JSON.stringify(dictionary) %>;
+    </script>
+    <script src="<%= site.url_for('javascripts/search.js') %>"></script>
+</body>
+
+</html>

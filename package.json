@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "ulimit -n 4096 && NODE_PATH=./ node ./bin/www",
+    "start": "ulimit -n 4096 && NODE_PATH=./ node --max-old-space-size=65536 ./bin/www",
     "flush-redis": "redis-cli flushall",
     "fresh-start": "redis-cli flushall && ulimit -n 4096 && NODE_PATH=./ nodejs ./bin/www",
     "test": "NODE_PATH=./ NODE_ENV=test mocha --recursive --exit",
