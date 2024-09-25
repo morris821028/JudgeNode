@@ -57,7 +57,9 @@
               <%- include('_partial/_report/report') %>
             <% } else if (layout == 'problem_report') { %>
               <%- include('_partial/_report/problem') %>
-            <% } %>
+            <% } else if (layout == 'Dictionary') { %>
+              <%- include('_partial/_dictionary/dictionary') %>
+            <% }%>
           </section>
       </div>
       <%- include('_partial/mobile-nav') %>
